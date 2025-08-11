@@ -16,7 +16,7 @@ interface ListData {
     readTime: number;
     created_at: string;
 }
-export default function content() {
+export default function Content() {
     const [listData, setListData] = useState<ListData[]>([])
     useEffect(() => {
         fetchData().then(res => {

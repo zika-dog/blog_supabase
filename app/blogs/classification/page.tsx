@@ -1,8 +1,7 @@
 "use client"
 import React, { Component } from 'react'
-import { Space, Table, Tag, Button, Modal ,Popconfirm} from 'antd';
+import { Space, Table, Tag, Button, Modal } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
-import type { PopconfirmProps } from 'antd';
 import { fetchData, deleteBlog } from '@/lib/supabase/supabase';
 import UpdateCom from '@/components/updateCom';
 import Link from 'next/link';
@@ -13,6 +12,9 @@ interface DataType {
   created_at: string;
   tags: string[];
   id: string;
+  content: string;
+  sympolDes: string;
+  readTime: number;
 }
 
 interface StateType {
@@ -23,12 +25,12 @@ interface StateType {
   modalText: string;
   id: string;
   open: boolean;
-  blogData: any;
+  blogData: DataType | null;
 }
 
 
 
-export default class page extends Component<{}, StateType> {
+export default class Page extends Component<Record<string, never>, StateType> {
 
   columns: ColumnsType<DataType> = [
     {
@@ -61,7 +63,7 @@ export default class page extends Component<{}, StateType> {
       render: (_, { tags }) => (
         <>
           {tags.map(tag => {
-            let color = 'gold'
+            const color = 'gold'
             return (
               <Tag color={color} key={tag}>
                 {tag}
@@ -96,8 +98,8 @@ export default class page extends Component<{}, StateType> {
     },
   ];
 
-  constructor(props: any) {
-    super(props)
+  constructor() {
+    super({})
     this.state = {
       data: [],
       loading: true,
@@ -106,7 +108,7 @@ export default class page extends Component<{}, StateType> {
       modalText: '是否确定删除这篇文章！',
       id: '',
       open: false,
-      blogData: {}
+      blogData: null
     }
   }
 
@@ -130,8 +132,8 @@ export default class page extends Component<{}, StateType> {
     this.setState({
       confirmLoading: true,
     }, () => {
-      deleteBlog(this.state.id).then(res => {
-        let _data = this.state.data.filter((item) => item.id != this.state.id)
+      deleteBlog(this.state.id).then(() => {
+        const _data = this.state.data.filter((item) => item.id != this.state.id)
         this.setState({
           data: _data
         })
@@ -165,8 +167,8 @@ export default class page extends Component<{}, StateType> {
   
 
   componentDidMount() {
-    fetchData().then(res => {
-      let _data = res.map((item: any, index: number) => ({
+    fetchData().then((res) => {
+      const _data = res.map((item: DataType, index: number) => ({
         ...item,
         key: item.id || `row-${index}`,
         id: item.id
@@ -194,7 +196,7 @@ export default class page extends Component<{}, StateType> {
         >
           <p>{this.state.modalText}</p>
         </Modal>
-        <UpdateCom data={ this.state.blogData } open={this.state.open} setOpen={this.handleUpdate} />
+        {this.state.blogData && <UpdateCom data={this.state.blogData} open={this.state.open} setOpen={this.handleUpdate} />}
         <Table loading={this.state.loading} bordered size='small' pagination={false} columns={this.columns} dataSource={this.state.data} />
       </div>
     )

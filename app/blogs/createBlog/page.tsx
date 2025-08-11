@@ -1,17 +1,8 @@
 'use client'
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 import { Button, Form, Input, InputNumber, Select, message } from 'antd';
 import { createBlog } from '@/lib/supabase/supabase';
 import type { SelectProps } from 'antd';
-
-interface Blog {
-  title: string;
-  content: string;
-  tags: string[];
-  sympolDes: string;
-  author: string;
-  readTime: number;
-}
 const options: SelectProps['options'] = [
   {
     label: 'react',
@@ -56,10 +47,9 @@ const layout = {
   labelCol: { span: 4 },
   wrapperCol: { span: 20 },
 };
-export default function page() {
+export default function Page() {
   const [form] = Form.useForm();
 
-  /* eslint-disable no-template-curly-in-string */
   const validateMessages = {
     required: '${label} 不能为空哦!',
     types: {
@@ -69,11 +59,10 @@ export default function page() {
       range: '${label} must be between ${min} and ${max}',
     },
   };
-  /* eslint-enable no-template-curly-in-string */
 
-  const onFinish = (values: any) => {
+  const onFinish = (values: { user: { title: string; content: string; tags: string[]; sympolDes: string; author: string; readTime: number } }) => {
     console.log(values);
-    createBlog({ ...values.user }).then(res => {
+    createBlog({ ...values.user }).then(() => {
       message.success('发布成功');
       // 发布成功后重置表单
       form.resetFields();

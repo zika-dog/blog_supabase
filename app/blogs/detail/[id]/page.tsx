@@ -11,7 +11,7 @@ interface BlogDetail {
   sympolDes: string
   created_at: string
 }
-export default function page({ params }: { params: Promise<{ id: string }> }) {
+export default function Page({ params }: { params: Promise<{ id: string }> }) {
   const { id } = React.use(params)
   const [blogDetail, setBlogDetail] = useState<BlogDetail>({
     title: '',

@@ -9,7 +9,7 @@ import Link from "next/link";
 import { Button } from "./ui/button";
 import { usePathname } from 'next/navigation';
 
-export default function header() {
+export default function Header() {
     const pathname = usePathname()
     const navList = [
         { href: "/", label: "首页", active: pathname === "/" },

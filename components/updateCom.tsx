@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Button, Modal, message } from 'antd';
+import { Modal, message } from 'antd';
 import { Form, Input, InputNumber, Select } from 'antd';
 import type { DraggableData, DraggableEvent } from 'react-draggable';
 import Draggable from 'react-draggable';
@@ -84,7 +84,6 @@ export default function UpdateCom(props: UpdateComProps) {
     }, [props.open, props.data, form]);
 
 
-    /* eslint-disable no-template-curly-in-string */
     const validateMessages = {
         required: '${label} 不能为空哦!',
         types: {
@@ -94,13 +93,12 @@ export default function UpdateCom(props: UpdateComProps) {
             range: '${label} must be between ${min} and ${max}',
         },
     };
-    /* eslint-enable no-template-curly-in-string */
 
-    const onFinish = (values: any) => {
+    const onFinish = (values: { user: { title: string; content: string; tags: string[]; sympolDes: string; author: string; readTime: number } }) => {
         console.log(form.getFieldsValue(),props.data.id,'yuuuyy');
         
         setConfirmLoading(true);
-        updateBlog(props.data.id,form.getFieldsValue().user).then(() => {
+        updateBlog(props.data.id, values.user).then(() => {
             message.success('修改成功');
             setConfirmLoading(false);
             setOpen(false);
@@ -165,7 +163,7 @@ export default function UpdateCom(props: UpdateComProps) {
                 </div>
             }
             open={open}
-            onOk={onFinish}
+            onOk={() => form.submit()}
             okText="确定"
             cancelText="取消"
             onCancel={handleCancel}
