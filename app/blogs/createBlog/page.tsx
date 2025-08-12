@@ -1,8 +1,9 @@
 'use client'
-import React from 'react'
+import React ,{ useEffect, useState } from 'react'
 import { Button, Form, Input, InputNumber, Select, message } from 'antd';
-import { createBlog } from '@/lib/supabase/supabase';
+import { createBlog ,fetchTags} from '@/lib/supabase/supabase';
 import type { SelectProps } from 'antd';
+import { createBlogClient } from '@/lib/supabase/client-apis';
 const options: SelectProps['options'] = [
   {
     label: 'react',
@@ -49,7 +50,12 @@ const layout = {
 };
 export default function Page() {
   const [form] = Form.useForm();
-
+  const [tags, setTags] = useState<{label:string,value:string}[]>([])
+  useEffect(() => {
+    fetchTags().then((res) => {
+      setTags(res)
+    })
+  }, [])
   const validateMessages = {
     required: '${label} 不能为空哦!',
     types: {
@@ -62,7 +68,7 @@ export default function Page() {
 
   const onFinish = (values: { user: { title: string; content: string; tags: string[]; sympolDes: string; author: string; readTime: number } }) => {
     console.log(values);
-    createBlog({ ...values.user }).then(() => {
+    createBlogClient({ ...values.user }).then(() => {
       message.success('发布成功');
       // 发布成功后重置表单
       form.resetFields();
@@ -109,7 +115,7 @@ export default function Page() {
               allowClear
               style={{ width: '100%' }}
               placeholder="Please select"
-              options={options}
+              options={tags}
             />
           </Form.Item>
 

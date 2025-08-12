@@ -4,7 +4,8 @@ import { Form, Input, InputNumber, Select } from 'antd';
 import type { DraggableData, DraggableEvent } from 'react-draggable';
 import Draggable from 'react-draggable';
 import type { SelectProps } from 'antd';
-import { updateBlog } from '@/lib/supabase/supabase';
+import { updateBlogClient } from '@/lib/supabase/client-apis';
+import { fetchTags } from '@/lib/supabase/supabase';
 interface UpdateComProps {
     open: boolean;
     setOpen: (open: boolean) => void;
@@ -20,44 +21,6 @@ interface Blog {
     readTime: number;
     id: string;
 }
-const options: SelectProps['options'] = [
-    {
-        label: 'react',
-        value: 'react',
-    },
-    {
-        label: 'nextjs',
-        value: 'nextjs',
-    },
-    {
-        label: 'go',
-        value: 'go',
-    },
-    {
-        label: 'web3',
-        value: 'web3',
-    },
-    {
-        label: 'solidity',
-        value: 'solidity',
-    },
-    {
-        label: 'rust',
-        value: 'rust',
-    },
-    {
-        label: 'python',
-        value: 'python',
-    },
-    {
-        label: 'java',
-        value: 'java',
-    },
-    {
-        label: 'cicd',
-        value: 'cicd',
-    },
-];
 
 
 const layout = {
@@ -72,16 +35,22 @@ export default function UpdateCom(props: UpdateComProps) {
     const [bounds, setBounds] = useState({ left: 0, top: 0, bottom: 0, right: 0 });
     const draggleRef = useRef<HTMLDivElement>(null!);
     const [confirmLoading, setConfirmLoading] = useState(false);
+    const [tagOptions, setTagOptions] = useState<SelectProps['options']>([]);
     useEffect(() => {
         setOpen(props.open);
         if (props.open && props.data) {
-            form.setFieldsValue({
-                user: {
-                    ...props.data
-                }
-            });
+            initialValues.user = {
+                ...props.data
+            }
+            form.setFieldsValue(initialValues);
         }
     }, [props.open, props.data, form]);
+
+    useEffect(() => {
+        fetchTags().then(res => {
+            setTagOptions(res);
+        });
+    }, []);
 
 
     const validateMessages = {
@@ -95,16 +64,16 @@ export default function UpdateCom(props: UpdateComProps) {
     };
 
     const onFinish = (values: { user: { title: string; content: string; tags: string[]; sympolDes: string; author: string; readTime: number } }) => {
-        console.log(form.getFieldsValue(),props.data.id,'yuuuyy');
-        
+        console.log(form.getFieldsValue(), props.data.id, 'yuuuyy');
+
         setConfirmLoading(true);
-        updateBlog(props.data.id, values.user).then(() => {
+        updateBlogClient(props.data.id, values.user).then(() => {
             message.success('修改成功');
             setConfirmLoading(false);
             setOpen(false);
             props.setOpen(false);
         }).catch(err => {
-            console.log(err,'err');
+            console.log(err, 'err');
             message.error('修改失败');
             setConfirmLoading(false);
         })
@@ -116,8 +85,8 @@ export default function UpdateCom(props: UpdateComProps) {
         user: {
             title: '',
             sympolDes: '',
-            readTime: undefined,
-            tags: [],
+            readTime: 0,
+            tags: [] as string[],
             author: '',
             content: ''
         }
@@ -201,7 +170,7 @@ export default function UpdateCom(props: UpdateComProps) {
                             allowClear
                             style={{ width: '100%' }}
                             placeholder="Please select"
-                            options={options}
+                            options={tagOptions}
                         />
                     </Form.Item>
 

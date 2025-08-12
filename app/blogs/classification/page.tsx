@@ -3,6 +3,7 @@ import React, { Component } from 'react'
 import { Space, Table, Tag, Button, Modal } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import { fetchData, deleteBlog } from '@/lib/supabase/supabase';
+import {deleteBlogClient} from '@/lib/supabase/client-apis'
 import UpdateCom from '@/components/updateCom';
 import Link from 'next/link';
 interface DataType {
@@ -98,8 +99,8 @@ export default class Page extends Component<Record<string, never>, StateType> {
     },
   ];
 
-  constructor() {
-    super({})
+  constructor(props:any) {
+    super(props)
     this.state = {
       data: [],
       loading: true,
@@ -132,7 +133,8 @@ export default class Page extends Component<Record<string, never>, StateType> {
     this.setState({
       confirmLoading: true,
     }, () => {
-      deleteBlog(this.state.id).then(() => {
+      deleteBlogClient(this.state.id).then((res) => {
+        console.log(res,'删除博客接口');
         const _data = this.state.data.filter((item) => item.id != this.state.id)
         this.setState({
           data: _data
