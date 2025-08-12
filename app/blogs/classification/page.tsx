@@ -2,8 +2,8 @@
 import React, { Component } from 'react'
 import { Space, Table, Tag, Button, Modal } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
-import { fetchData, deleteBlog } from '@/lib/supabase/supabase';
-import {deleteBlogClient} from '@/lib/supabase/client-apis'
+import { fetchData } from '@/lib/supabase/supabase';
+import { deleteBlogClient } from '@/lib/supabase/client-apis'
 import UpdateCom from '@/components/updateCom';
 import Link from 'next/link';
 interface DataType {
@@ -33,13 +33,14 @@ interface StateType {
 
 export default class Page extends Component<Record<string, never>, StateType> {
 
+
   columns: ColumnsType<DataType> = [
     {
       title: '博客名称',
       dataIndex: 'title',
       key: 'title',
       align: 'center',
-      render: (_, { title,id }) => <Link href={`/blogs/detail/${id}`}>{title}</Link>,
+      render: (_, { title, id }) => <Link href={`/blogs/detail/${id}`}>{title}</Link>,
     },
     {
       title: '作者',
@@ -82,7 +83,7 @@ export default class Page extends Component<Record<string, never>, StateType> {
         <Space size="small">
           <Button type="primary" className='bg-gray-600 hover:bg-gray-700 text-white' size='small' onClick={() => {
             this.setState({
-              open:true,
+              open: true,
               blogData: record
             })
           }}>编辑</Button>
@@ -99,7 +100,7 @@ export default class Page extends Component<Record<string, never>, StateType> {
     },
   ];
 
-  constructor(props:any) {
+  constructor(props: any) {
     super(props)
     this.state = {
       data: [],
@@ -109,7 +110,7 @@ export default class Page extends Component<Record<string, never>, StateType> {
       modalText: '是否确定删除这篇文章！',
       id: '',
       open: false,
-      blogData: null
+      blogData: null,
     }
   }
 
@@ -130,25 +131,29 @@ export default class Page extends Component<Record<string, never>, StateType> {
 
   // 确认删除
   handleOk = () => {
+    console.log('开始删除操作，ID:', this.state.id); // 添加调试日志
     this.setState({
       confirmLoading: true,
     }, () => {
+      console.log('调用 deleteBlogClient...'); // 添加调试日志
       deleteBlogClient(this.state.id).then((res) => {
-        console.log(res,'删除博客接口');
+        console.log('删除成功，响应:', res); // 添加调试日志
+
         const _data = this.state.data.filter((item) => item.id != this.state.id)
         this.setState({
           data: _data
         })
       }).catch(err => {
-        console.log(err)
+        console.log('删除失败，错误:', err); // 添加调试日志
+
       }).finally(() => {
+        console.log('删除操作完成'); // 添加调试日志
         this.setState({
           confirmLoading: false,
           isOpen: false
         })
       })
     })
-
   }
   // 取消删除
   handleCancel = () => {
@@ -158,7 +163,7 @@ export default class Page extends Component<Record<string, never>, StateType> {
   }
 
   // 编辑成功
-  handleUpdate = (data : boolean) => {
+  handleUpdate = (data: boolean) => {
     this.setState({
       open: data
     })
@@ -166,7 +171,7 @@ export default class Page extends Component<Record<string, never>, StateType> {
 
 
   }
-  
+
 
   componentDidMount() {
     fetchData().then((res) => {

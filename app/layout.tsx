@@ -3,6 +3,8 @@ import { Geist } from "next/font/google";
 import { ThemeProvider } from "next-themes";
 import "./globals.css";
 import Header from "@/components/header";
+import { App as AntdApp } from 'antd';
+import 'antd/dist/reset.css';
 
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
@@ -34,8 +36,10 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <Header />
-          {children}
+          <AntdApp>
+            <Header />
+            {children}
+          </AntdApp>
         </ThemeProvider>
       </body>
     </html>

@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Modal, message } from 'antd';
-import { Form, Input, InputNumber, Select } from 'antd';
+import { Form, Input, InputNumber, Select, notification } from 'antd';
 import type { DraggableData, DraggableEvent } from 'react-draggable';
 import Draggable from 'react-draggable';
 import type { SelectProps } from 'antd';
@@ -22,6 +22,8 @@ interface Blog {
     id: string;
 }
 
+type NotificationType = 'success' | 'info' | 'warning' | 'error';
+
 
 const layout = {
     labelCol: { span: 4 },
@@ -29,6 +31,7 @@ const layout = {
 };
 
 export default function UpdateCom(props: UpdateComProps) {
+    const [api, contextHolder] = notification.useNotification();
     const [form] = Form.useForm();
     const [open, setOpen] = useState(false);
     const [disabled, setDisabled] = useState(true);
@@ -52,7 +55,13 @@ export default function UpdateCom(props: UpdateComProps) {
         });
     }, []);
 
-
+    const openNotification = (msg:string,type:NotificationType) => {
+        api.open({
+            message: '提示',
+            description:msg,
+            type:type,
+        });
+    };
     const validateMessages = {
         required: '${label} 不能为空哦!',
         types: {
@@ -64,17 +73,15 @@ export default function UpdateCom(props: UpdateComProps) {
     };
 
     const onFinish = (values: { user: { title: string; content: string; tags: string[]; sympolDes: string; author: string; readTime: number } }) => {
-        console.log(form.getFieldsValue(), props.data.id, 'yuuuyy');
-
         setConfirmLoading(true);
         updateBlogClient(props.data.id, values.user).then(() => {
-            message.success('修改成功');
             setConfirmLoading(false);
             setOpen(false);
             props.setOpen(false);
+            openNotification('修改成功','success');
         }).catch(err => {
+            openNotification(err.message,'error');
             console.log(err, 'err');
-            message.error('修改失败');
             setConfirmLoading(false);
         })
     };
@@ -149,6 +156,7 @@ export default function UpdateCom(props: UpdateComProps) {
             )}
         >
             <div className='w-[800px] p-[16px]'>
+                {contextHolder}
                 <Form {...layout} form={form} name="nest-messages" onFinish={onFinish} validateMessages={validateMessages} initialValues={initialValues}>
                     <Form.Item name={['user', 'title']} label="标题" rules={[{ required: true }]}>
                         <Input />
