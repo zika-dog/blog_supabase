@@ -1,5 +1,5 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { Modal, message } from 'antd';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
+import { Modal } from 'antd';
 import { Form, Input, InputNumber, Select, notification } from 'antd';
 import type { DraggableData, DraggableEvent } from 'react-draggable';
 import Draggable from 'react-draggable';
@@ -39,15 +39,25 @@ export default function UpdateCom(props: UpdateComProps) {
     const draggleRef = useRef<HTMLDivElement>(null!);
     const [confirmLoading, setConfirmLoading] = useState(false);
     const [tagOptions, setTagOptions] = useState<SelectProps['options']>([]);
+
+    const getInitialValues = useCallback(() => ({
+        user: {
+            title: props.data?.title || '',
+            sympolDes: props.data?.sympolDes || '',
+            readTime: props.data?.readTime || 0,
+            tags: props.data?.tags || [],
+            author: props.data?.author || '',
+            content: props.data?.content || ''
+        }
+    }), [props.data]);
+
     useEffect(() => {
         setOpen(props.open);
         if (props.open && props.data) {
-            initialValues.user = {
-                ...props.data
-            }
+            const initialValues = getInitialValues();
             form.setFieldsValue(initialValues);
         }
-    }, [props.open, props.data, form]);
+    }, [props.open, props.data, form, getInitialValues]);
 
     useEffect(() => {
         fetchTags().then(res => {
@@ -87,17 +97,7 @@ export default function UpdateCom(props: UpdateComProps) {
     };
 
 
-    // 设置表单初始值
-    const initialValues = {
-        user: {
-            title: '',
-            sympolDes: '',
-            readTime: 0,
-            tags: [] as string[],
-            author: '',
-            content: ''
-        }
-    };
+
 
     const handleCancel = (e: React.MouseEvent<HTMLElement>) => {
         console.log(e);
@@ -157,7 +157,7 @@ export default function UpdateCom(props: UpdateComProps) {
         >
             <div className='w-[800px] p-[16px]'>
                 {contextHolder}
-                <Form {...layout} form={form} name="nest-messages" onFinish={onFinish} validateMessages={validateMessages} initialValues={initialValues}>
+                <Form {...layout} form={form} name="nest-messages" onFinish={onFinish} validateMessages={validateMessages} initialValues={getInitialValues()}>
                     <Form.Item name={['user', 'title']} label="标题" rules={[{ required: true }]}>
                         <Input />
                     </Form.Item>

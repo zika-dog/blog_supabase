@@ -100,7 +100,7 @@ export default class Page extends Component<Record<string, never>, StateType> {
     },
   ];
 
-  constructor(props: any) {
+  constructor(props: Record<string, never>) {
     super(props)
     this.state = {
       data: [],

@@ -16,11 +16,7 @@ interface Blog {
     readTime: number;
     user_id?: string; // 添加用户ID字段
 }
-interface tags {
-    id:string;
-    created_at:string;
-    type:string;
-}
+
 
 // 查询博客列表接口  ascending(上升的) 给true 和 false 决定是升序还是降序
 export const fetchData = async () => {
@@ -75,7 +71,7 @@ export const updateBlog = async (id: string, blog: Blog) => {
 // tags 标签
 export const fetchTags = async () => {
     const { data , error } = await supabase.from('tags').select()
-    let _data:{label:string,value:string}[] = []
+    const _data:{label:string,value:string}[] = []
     data?.forEach((item) => {
         _data.unshift({
             label:item.type,

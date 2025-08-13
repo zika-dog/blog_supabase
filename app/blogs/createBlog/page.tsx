@@ -1,47 +1,10 @@
 'use client'
 import React ,{ useEffect, useState } from 'react'
 import { Button, Form, Input, InputNumber, Select, message } from 'antd';
-import { createBlog ,fetchTags} from '@/lib/supabase/supabase';
-import type { SelectProps } from 'antd';
+import { fetchTags} from '@/lib/supabase/supabase';
+
 import { createBlogClient } from '@/lib/supabase/client-apis';
-const options: SelectProps['options'] = [
-  {
-    label: 'react',
-    value: 'react',
-  },
-  {
-    label: 'nextjs',
-    value: 'nextjs',
-  },
-  {
-    label: 'go',
-    value: 'go',
-  },
-  {
-    label: 'web3',
-    value: 'web3',
-  },
-  {
-    label: 'solidity',
-    value: 'solidity',
-  },
-  {
-    label: 'rust',
-    value: 'rust',
-  },
-  {
-    label: 'python',
-    value: 'python',
-  },
-  {
-    label: 'java',
-    value: 'java',
-  },
-  {
-    label: 'cicd',
-    value: 'cicd',
-  },
-];
+
 
 
 const layout = {
